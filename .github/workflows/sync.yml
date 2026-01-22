@@ -1,0 +1,32 @@
+name: Mirror Image to DockerHub
+
+# 触发条件：当你把代码 push 上去时，自动运行
+on: [push]
+
+jobs:
+  build:
+    # 租用一台最新版 Ubuntu 的虚拟电脑
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 登录 Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          # 这里引用了你刚才在 Settings 里配的两个变量
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 2. 拉取、改名、推送
+      - name: Pull, Tag and Push
+        run: |
+          # A. 从谷歌拉取原始镜像 (GitHub的网络可以连通)
+          docker pull gcr.io/oss-fuzz-base/base-builder-python:latest
+          
+          # B. 给镜像贴个新标签 (改名)
+          # 格式：docker tag 原镜像名 你的DockerHub用户名/镜像名:版本
+          # 【注意】下面这行代码，请把 '你的DockerHub用户名' 换成你真实的用户名！
+          docker tag gcr.io/oss-fuzz-base/base-builder-python:latest ${{ secrets.DOCKERHUB_USERNAME }}/base-builder-python:latest
+          
+          # C. 推送到你的 Docker Hub
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/base-builder-python:latest
