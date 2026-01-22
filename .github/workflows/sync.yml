@@ -14,8 +14,8 @@ jobs:
         uses: docker/login-action@v2
         with:
           # 这里引用了你刚才在 Settings 里配的两个变量
-          username: zhangying1
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username:zhangying1
+          password:${{ secrets.DOCKERHUB_TOKEN }}
 
       # 2. 拉取、改名、推送
       - name: Pull, Tag and Push
